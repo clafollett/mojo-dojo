@@ -39,6 +39,9 @@ struct Grid():
         return self.data[row][col]
 
     fn evolve(self) -> Self:
+        # Seed the random number generator using the current time
+        random.seed()
+
         next_generation = List[List[CellState]]()
 
         for row in range(self.rows):
@@ -78,12 +81,13 @@ struct Grid():
                 if current_state.value == 1 and (num_neighbors == 2 or num_neighbors == 3):
                     # No change
                     new_state.value = 1
-                elif current_state.value == 0 and (
-                        num_neighbors == 3 or (current_state.previous == 0 and current_state.evolutions > 20)
-                    ):
-                    new_state.value = 1 # Toggle the state
-                    new_state.previous = 0 # Set the previous state
-                    new_state.evolutions = 1 # Reset the evolutions
+                elif current_state.value == 0:
+                    evolution_cap = int(random.random_si64(5, 20))
+
+                    if num_neighbors == 3 or (current_state.previous == 0 and current_state.evolutions > evolution_cap):
+                        new_state.value = 1 # Toggle the state
+                        new_state.previous = 0 # Set the previous state
+                        new_state.evolutions = 1 # Reset the evolutions
 
                 row_data.append(new_state)
 
